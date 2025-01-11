@@ -71,3 +71,46 @@ def pregunta_01():
 
 
     """
+
+    import zipfile
+    import os
+    import pandas as pd
+    import glob
+
+    with zipfile.ZipFile('files/input.zip', 'r') as zip_ref:
+        zip_ref.extractall('files')
+
+    os.makedirs('files/output', exist_ok=True)
+
+    def generador(ruta_input, nombre_output):
+
+        data = [['phrase', 'target']]
+
+        target = 'negative'
+        for filepath in glob.glob(f"{ruta_input}/{target}/*"):
+            with open(filepath, 'r', encoding='utf-8') as file:
+                phrase = file.read().strip()
+                data.append([phrase, target])
+
+        target = 'neutral'
+        for filepath in glob.glob(f"{ruta_input}/{target}/*"):
+            with open(filepath, 'r', encoding='utf-8') as file:
+                phrase = file.read().strip()
+                data.append([phrase, target])
+
+        target = 'positive'
+        for filepath in glob.glob(f"{ruta_input}/{target}/*"):
+            with open(filepath, 'r', encoding='utf-8') as file:
+                phrase = file.read().strip()
+                data.append([phrase, target])
+
+        data = pd.DataFrame(data[1:], columns=data[0])
+        data.to_csv('files/output/' + nombre_output, index=False)
+
+        return pd.DataFrame(data)
+
+    generador("files/input/test", "test_dataset.csv")
+    generador("files/input/train", "train_dataset.csv")
+
+
+pregunta_01()
